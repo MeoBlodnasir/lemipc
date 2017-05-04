@@ -32,7 +32,7 @@ libft.a:
 		@$(MAKE) -C ./libft
 
 $(NAME) : $(OBJ)
-		@gcc -o $(NAME) $(SRC) -L./libft/ -lftprintf -I ./libft -lpthread -lrt -lm
+		@gcc -Wall -Wextra -o $(NAME) $(SRC) -L./libft/ -lftprintf -I ./libft -lpthread -lrt -lm
 
 %.o: %.c
 		@gcc -I./libft/ -o $@ -c $^

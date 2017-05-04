@@ -35,9 +35,7 @@ void	mq_attach(char team, mqd_t *mq, int *created)
 		*created = 0;
 	}
 	else
-	{
 		*created = 1;
-	}
 	*mq = mqid;
 }
 

@@ -15,16 +15,16 @@ int		isenemy(t_player *player, char c)
 	return (!isempty(c) && !isally(player, c));
 }
 
-int		isoutofrange(unsigned int x, unsigned int y)
+int		isoutofrange(int x, int y)
 {
 	return (x >= MAP_WIDTH || y >= MAP_HEIGHT);
 }
 
-void	random_move(t_player *player, char **map, unsigned int *x1, unsigned int *y1)
+void	random_move(t_player *player, char **map, int *x1, int *y1)
 {
 	int				timeout;
-	unsigned int	x;
-	unsigned int	y;
+	int	x;
+	int	y;
 
 	timeout = 10;
 	while (timeout)
