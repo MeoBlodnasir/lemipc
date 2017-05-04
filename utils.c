@@ -17,7 +17,7 @@ int		isenemy(t_player *player, char c)
 
 int		isoutofrange(int x, int y)
 {
-	return (x >= MAP_WIDTH || y >= MAP_HEIGHT);
+	return (x < 0 || y < 0 || x >= MAP_WIDTH || y >= MAP_HEIGHT);
 }
 
 void	random_move(t_player *player, char **map, int *x1, int *y1)

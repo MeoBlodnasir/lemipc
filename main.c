@@ -22,30 +22,46 @@ void	init_game(t_shm *shm)
   }
 }
 
-void	init(t_context *context)
+void	shm_link(char **map, t_shm *shm)
 {
-  int		created;
+	int		i;
 
-  shm_init(&context->shmfd, &created);
-  context->prime = created;
-  sem_attach(&context->sem_id, created);
-  sem_wait(context->sem_id);
-  shm_alloc(&context->shm, context->shmfd);
-  shm_link(context->map, context->shm);
-  if (created)
-    init_game(context->shm);
-  sem_post(context->sem_id);
+	i = 0;
+	while (i < MAP_HEIGHT)
+	{
+		map[i] = shm->m + (i + 1) * TRUEMAP_WIDTH + 1;
+		i += 1;
+	}
 }
 
-void	end(t_context *context)
+void	init(t_context *context)
 {
-  shm_free(context->shm);
-  sem_detach(context->sem_id);
-  if (context->prime)
-  {
-    sem_erase();
-    shm_erase();
-  }
+	shm_get(&context->shmid, &context->creator);
+	shm_attach(&context->shm, context->shmid);
+	sem_get(&context->semid, context->creator);
+	sem_wait(context->semid);
+	shm_link(context->map, context->shm);
+	if (context->creator)
+	{
+		init_game(context->shm);
+	}
+	sem_post(context->semid);
+	mq_get(&context->mqid);
+}
+
+void	end(t_context *context, int last_process)
+{
+	if (last_process)
+	{
+		mq_destroy(context->mqid);
+		sem_destroy(context->semid);
+		shm_detach(context->shm);
+		shm_destroy(context->shmid);
+	}
+	else
+	{
+		shm_detach(context->shm);
+	}
 }
 
 void	display(t_shm *shm)
@@ -99,12 +115,17 @@ int		isdead(t_player *player, char **map)
   enemy = NULL;
   enemy_count = 0;
   i = -1;
-  while (++i < (int)(sizeof(delta) / sizeof(delta[0])))
+  while (++i < (int)(sizeof(delta) / (int)sizeof(delta[0])))
   {
-    p.x = (unsigned int)((int)player->pos.x + delta[i][0]);
-    p.y = (unsigned int)((int)player->pos.y + delta[i][1]);
+    p.x = player->pos.x + delta[i][0];
+    p.y = player->pos.y + delta[i][1];
+  fprintf(stderr, "after init\n");
     if (!isoutofrange(p.x, p.y) && isenemy(player, map[p.y][p.x]))
+    {
+  fprintf(stderr, "begin isead\n");
       enemy = handle_enemy(p, map, enemy, &enemy_count);
+    }
+  fprintf(stderr, "outside\n");
   }
   i = -1;
   while (++i < enemy_count)
@@ -148,16 +169,19 @@ void	loop(t_context *context)
 
   while (!die)
   {
-    sem_wait(context->sem_id);
+    sem_wait(context->semid);
+  
     if (context->shm->state != GAMESTATE_INIT &&
         last_team_standing(context->map, &winner))
+    {
       die = 1;
+    }
     if (context->shm->state == GAMESTATE_OVER ||
         isdead(&context->player, context->map))
       die = 1;
     else if (context->shm->state == GAMESTATE_ON)
       ia(context);
-    sem_post(context->sem_id);
+    sem_post(context->semid);
     usleep(200000);
   }
 }
@@ -169,12 +193,12 @@ void	loop_display(t_context *context)
 
   while (!die)
   {
-    sem_wait(context->sem_id);
+    sem_wait(context->semid);
     if (context->shm->state != GAMESTATE_INIT &&
         last_team_standing(context->map, &winner))
       die = 1;
     display(context->shm);
-    sem_post(context->sem_id);
+    sem_post(context->semid);
     usleep(200000);
   }
   fprintf(stderr, "Winner %c\n", winner);
@@ -182,33 +206,35 @@ void	loop_display(t_context *context)
 
 void   handle_start(t_context context)
 {
-    sem_wait(context.sem_id);
+    sem_wait(context.semid);
     context.shm->state = GAMESTATE_ON;
-    sem_post(context.sem_id);
+    sem_post(context.semid);
 }
 
 void    handle_stop(t_context context)
 {
-    sem_wait(context.sem_id);
+    sem_wait(context.semid);
     context.shm->state = GAMESTATE_OVER;
-    sem_post(context.sem_id);
+    sem_post(context.semid);
 }
 
-void    handle_general_case(t_context context, char **argv)
+void    handle_general_case(t_context context, char **argv, int *last_process)
 {
-    sem_wait(context.sem_id);
+    sem_wait(context.semid);
     player_init(&context.player, context.map, argv[1][0]);
-    sem_post(context.sem_id);
+    sem_post(context.semid);
     loop(&context);
-    sem_wait(context.sem_id);
-    player_erase(&context.player, context.map);
-    sem_post(context.sem_id);
+    sem_wait(context.semid);
+    *last_process = player_erase(&context.player, context.map, last_process);
+    sem_post(context.semid);
 }
 
 int		main(int argc, char **argv)
 {
   t_context	context;
+  int			last_process;
 
+  last_process = 0;
   if (argc != 2)
   {
     printf("Only specify team id\n");
@@ -223,7 +249,9 @@ int		main(int argc, char **argv)
   else if (!ft_strcmp(argv[1], "display"))
     loop_display(&context);
   else
-    handle_general_case(context, argv);
-  end(&context);
+  {
+    handle_general_case(context, argv, &last_process);
+  }
+  end(&context, last_process);
   return (0);
 }

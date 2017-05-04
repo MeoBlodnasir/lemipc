@@ -114,12 +114,7 @@ bool    send_attck_msg(t_context *context)
   if (!get_target_coord(context, &targetx, &targety))
     return false;
   asprintf(&msg, "%d;%d", targetx, targety);
-  struct timespec t;
-  t.tv_sec = 1;
-  t.tv_nsec = 0;
-  int ret = mq_timedsend(context->player.mq, msg, ft_strlen(msg), 0, &t);
-  if (ret == -1)
-    perror("mq_send");
+  mq_send(context->mqid, context->player.id, msg, ft_strlen(msg));
   return true;
 
 }
@@ -166,6 +161,7 @@ void    fill_coord(char *msg_ptr, int  *x_target, int *y_target)
   tab = ft_strsplit(msg_ptr, ';');
   *x_target = ft_atoi(tab[0]);
   *y_target = ft_atoi(tab[1]);
+
 }
 
 void    move_x(t_context *context, int x_target)
@@ -191,19 +187,17 @@ void    move_y(t_context *context, int y_target)
 void	ia(t_context *context)
 {
   char msg_ptr[1024];
-  struct timespec t;
   ssize_t ret;
   int x_target;
   int y_target;
   if (!send_attck_msg(context))
     return;
-  t.tv_sec = 1;
-  t.tv_nsec = 0;
-  ret = mq_timedreceive(context->player.mq, msg_ptr, 1024, NULL, &t);
-  if (ret == -1)
-    perror("mq_timedreceive");
-  else
-    msg_ptr[ret] = '\0';
+  ret = mq_recv(context->mqid, context->player.id, msg_ptr, 1024);
+  if (ret == 0)
+  {
+    perror("receive msg:");
+    return ;
+  }
   fill_coord(msg_ptr, &x_target, &y_target); 
   takeoff_player(context);
   if (abs(y_target - context->player.pos.y) > abs(x_target - context->player.pos.x))
