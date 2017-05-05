@@ -6,7 +6,7 @@
 /*   By: aduban <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/05 17:31:35 by aduban            #+#    #+#             */
-/*   Updated: 2017/05/05 17:57:32 by aduban           ###   ########.fr       */
+/*   Updated: 2017/05/05 19:34:29 by aduban           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void					mq_get(int *mqid);
 void					mq_destroy(int mqid);
 void					mq_send(int mqid, int type, void *msg, size_t msgsize);
 ssize_t					mq_recv(int mqid, int type, char *msg, size_t msgsize);
-void					player_init(t_player *player,
+int						player_init(t_player *player,
 		char *map[MAP_HEIGHT], char team);
 int						player_erase(t_player *player,
 		char **map, int *last_player);

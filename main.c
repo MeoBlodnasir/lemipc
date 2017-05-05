@@ -6,7 +6,7 @@
 /*   By: aduban <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/05 16:43:19 by aduban            #+#    #+#             */
-/*   Updated: 2017/05/05 16:54:12 by aduban           ###   ########.fr       */
+/*   Updated: 2017/05/05 19:03:45 by aduban           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,13 @@ void		handle_stop(t_context context)
 void		handle_general_case(t_context context,
 		char **argv, int *last_process)
 {
+	int c;
+
 	sem_wait(context.semid);
-	player_init(&context.player, context.map, argv[1][0]);
+	c = player_init(&context.player, context.map, argv[1][0]);
 	sem_post(context.semid);
+	if (c == -1)
+		return ;;
 	loop(&context);
 	sem_wait(context.semid);
 	*last_process = player_erase(&context.player, context.map, last_process);
