@@ -1,5 +1,16 @@
-#include "lemipc.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mq.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aduban <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/05/05 16:15:13 by aduban            #+#    #+#             */
+/*   Updated: 2017/05/05 17:58:01 by aduban           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "lemipc.h"
 
 void	mq_get(int *mqid)
 {
@@ -22,16 +33,17 @@ void	mq_destroy(int mqid)
 
 void	mq_send(int mqid, int type, void *msg, size_t msgsize)
 {
-	struct msgbuf	buf;
-    buf.mtype = type;
+	t_msgbuf	buf;
+
+	buf.mtype = type;
 	ft_memcpy(buf.mtext, msg, msgsize);
 	msgsnd(mqid, &buf, msgsize, IPC_NOWAIT);
 }
 
 ssize_t	mq_recv(int mqid, int type, char *msg, size_t msgsize)
 {
-	struct msgbuf	buf;
-	ssize_t			size;
+	t_msgbuf	buf;
+	ssize_t		size;
 
 	size = msgrcv(mqid, &buf, msgsize, type, IPC_NOWAIT);
 	if (size <= 0 || size >= (int)msgsize)

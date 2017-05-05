@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   shm.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aduban <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/05/05 16:21:32 by aduban            #+#    #+#             */
+/*   Updated: 2017/05/05 16:21:40 by aduban           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lemipc.h"
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -32,7 +44,7 @@ void	shm_get(int *shmid, int *created)
 
 void	shm_destroy(int shmid)
 {
-	if (shmctl (shmid, IPC_RMID, 0) == -1)
+	if (shmctl(shmid, IPC_RMID, 0) == -1)
 	{
 		perror("shmctl IPC_RMID");
 		exit(EXIT_FAILURE);

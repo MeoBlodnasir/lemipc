@@ -1,13 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sem.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aduban <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/05/05 16:18:46 by aduban            #+#    #+#             */
+/*   Updated: 2017/05/05 16:20:59 by aduban           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lemipc.h"
 #include <sys/ipc.h>
 #include <sys/sem.h>
-
-union semun {
-	int					val;
-	struct semid_ds		*buf;
-	unsigned short int	*array;
-	struct seminfo		*__buf;
-};
 
 static void	sem_init(int semid)
 {
@@ -38,16 +43,16 @@ void		sem_get(int *semid, int creator)
 		sem_init(*semid);
 }
 
-void	sem_destroy(int semid)
+void		sem_destroy(int semid)
 {
-	if (semctl (semid, 1, IPC_RMID, 0) == -1)
+	if (semctl(semid, 1, IPC_RMID, 0) == -1)
 	{
 		perror("semctl IPC_RMID");
 		exit(EXIT_FAILURE);
 	}
 }
 
-void	sem_wait(int semid)
+void		sem_wait(int semid)
 {
 	struct sembuf	op;
 
@@ -61,7 +66,7 @@ void	sem_wait(int semid)
 	}
 }
 
-void	sem_post(int semid)
+void		sem_post(int semid)
 {
 	struct sembuf	op;
 

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aduban <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/05/05 16:24:12 by aduban            #+#    #+#             */
+/*   Updated: 2017/05/05 16:24:25 by aduban           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lemipc.h"
 
 int		isempty(char c)
@@ -22,7 +34,7 @@ int		isoutofrange(int x, int y)
 
 void	random_move(t_player *player, char **map, int *x1, int *y1)
 {
-	int				timeout;
+	int	timeout;
 	int	x;
 	int	y;
 
@@ -44,4 +56,3 @@ void	random_move(t_player *player, char **map, int *x1, int *y1)
 	*x1 = player->pos.x;
 	*y1 = player->pos.y;
 }
-

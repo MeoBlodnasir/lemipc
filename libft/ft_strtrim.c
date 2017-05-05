@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-char *ft_strtrim(char const *s)
+char	*ft_strtrim(char const *s)
 {
 	unsigned int	i;
 	unsigned int	l;

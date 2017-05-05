@@ -6,7 +6,7 @@
 #    By: aduban <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/12/02 12:05:34 by aduban            #+#    #+#              #
-#    Updated: 2016/04/29 16:48:40 by aduban           ###   ########.fr        #
+#    Updated: 2017/05/05 17:51:43 by aduban           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,11 @@ SRC=\
 	player.c	\
 	utils.c		\
 	ia.c	\
+	end.c\
+	ia_utils.c\
+	init.c\
+	loop.c\
+	movements.c
 
 .PHONY: libft.a
 
@@ -32,7 +37,7 @@ libft.a:
 		@$(MAKE) -C ./libft
 
 $(NAME) : $(OBJ)
-		@gcc -Wall -Wextra -Werror -o $(NAME) $(SRC) -L./libft/ -lftprintf -I ./libft -lpthread -lrt -lm
+		@gcc -Wall -Wextra -Werror -o $(NAME) $(SRC) -L./libft/ -lftprintf -I ./libft -lpthread -lm
 
 %.o: %.c
 		@gcc -Wall -Wextra -Werror -I./libft/ -o $@ -c $^
